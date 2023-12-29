@@ -15,7 +15,7 @@ The QR Code project is a Node.js application that utilizes the qr-image library 
 Clone the project
 
 ```bash
-  git clone https://github.com/Anjali17aj/QR-Code-Generator
+  git clone https://github.com/Samsingh36/QR-Code-Generator
 ```
 
 Go to the project directory
