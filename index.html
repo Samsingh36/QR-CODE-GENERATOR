@@ -1,0 +1,65 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #urlForm {
+            margin: 20px;
+        }
+
+        #urlInput {
+            padding: 5px;
+        }
+
+        #qrcode {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Generator</h1>
+    <form id="urlForm">
+        <label for="urlInput">Type in your URL:</label>
+        <input type="text" id="urlInput" name="URL" required>
+        <button type="button" onclick="generateQRCode()">Generate QR Code</button>
+    </form>
+    <div id="qrcode"></div>
+
+    <script>
+        async function generateQRCode() {
+            const urlInput = document.getElementById('urlInput').value;
+
+            try {
+                const response = await fetch(`/generate?q=${encodeURIComponent(urlInput)}`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to generate QR code');
+                }
+
+                const qrCodeImage = document.createElement('img');
+                qrCodeImage.src = URL.createObjectURL(await response.blob());
+
+                const qrCodeContainer = document.getElementById('qrcode');
+                qrCodeContainer.innerHTML = '';
+                qrCodeContainer.appendChild(qrCodeImage);
+            } catch (error) {
+                console.error('Error:', error.message);
+                // Handle the error (e.g., show an error message to the user)
+            }
+        }
+    </script>
+</body>
+</html>
