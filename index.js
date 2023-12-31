@@ -1,11 +1,10 @@
-// index.js
 import express from 'express';
 import qr from 'qr-image';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -24,13 +23,9 @@ app.get('/generate', (req, res) => {
     }
 
     try {
-        const qr_svg = qr.image(url, { type: 'png' });
-        
-        // Set the content type to PNG
+        const qrCode = qr.image(url, { type: 'png' });
         res.type('png');
-        
-        // Pipe the QR code image directly to the response
-        qr_svg.pipe(res);
+        qrCode.pipe(res);
     } catch (error) {
         console.error('QR code generation error:', error);
         res.status(500).json({ error: 'Failed to generate QR code' });
