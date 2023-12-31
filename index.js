@@ -1,28 +1,42 @@
-import inquirer from "inquirer";  //Use the inquirer npm package to get user input.
-import qr from "qr-image"; //Use the qr-image npm package to turn the user entered URL into a QR code image.
-import fs from "fs";
+// index.js
+import express from 'express';
+import qr from 'qr-image';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-inquirer
-  .prompt([
-    {
-      message: "Type in your URL: ",
-      name: "URL",
-    },
-  ])
-  .then((answers) => {
-    const url = answers.URL;
-    var qr_svg = qr.image(url);
-    qr_svg.pipe(fs.createWriteStream("qr_img.png"));
+const app = express();
+const port = 4000;
 
-    fs.writeFile("URL.txt", url, (err) => {   //a txt file to save the user input using the native fs node module.
-      if (err) throw err;
-      console.log("The file has been saved!");
-    });
-  })
-  .catch((error) => {
-    if (error.isTtyError) {
-      // Prompt couldn't be rendered in the current environment
-    } else {
-      // Something else went wrong
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+app.use(express.static(join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+    res.sendFile(join(__dirname, 'index.html'));
+});
+
+app.get('/generate', (req, res) => {
+    const url = req.query.q;
+
+    if (!url) {
+        return res.status(400).json({ error: 'URL is required' });
     }
-  });
+
+    try {
+        const qr_svg = qr.image(url, { type: 'png' });
+        
+        // Set the content type to PNG
+        res.type('png');
+        
+        // Pipe the QR code image directly to the response
+        qr_svg.pipe(res);
+    } catch (error) {
+        console.error('QR code generation error:', error);
+        res.status(500).json({ error: 'Failed to generate QR code' });
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Server is running at http://localhost:${port}`);
+});
