@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
     res.sendFile(join(__dirname, 'index.html'));
 });
 
-app.get('/generate', (req, res) => {
+app.get('/generate', async (req, res) => {
     const url = req.query.q;
 
     if (!url) {
@@ -24,8 +24,20 @@ app.get('/generate', (req, res) => {
 
     try {
         const qrCode = qr.image(url, { type: 'png' });
-        res.type('png');
-        qrCode.pipe(res);
+
+        // Convert the image stream to a buffer
+        let qrCodeBuffer = Buffer.alloc(0);
+        qrCode.on('data', (chunk) => {
+            qrCodeBuffer = Buffer.concat([qrCodeBuffer, chunk]);
+        });
+
+        qrCode.on('end', () => {
+            // Set the content type to PNG
+            res.type('png');
+
+            // Send the buffer in the response
+            res.send(qrCodeBuffer);
+        });
     } catch (error) {
         console.error('QR code generation error:', error);
         res.status(500).json({ error: 'Failed to generate QR code' });
