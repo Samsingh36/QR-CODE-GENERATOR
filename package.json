@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "build": "node index.js",  
+    "build": "babel src -d dist && cp -r public/* dist/ && uglifyjs dist/*.js -o dist/bundle.min.js",
+
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,5 +17,11 @@
     "express": "^4.17.1",
     "inquirer": "^9.2.12",
     "qr-image": "^3.2.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.7",
+    "@babel/preset-env": "^7.23.7",
+    "uglify-js": "^3.17.4"
   }
 }
