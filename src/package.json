@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "build":   "babel src -d dist && uglifyjs dist/*.js -o dist/bundle.min.js",
+    "build": "babel src -d dist && cp -r public/* dist/ && uglifyjs dist/*.js -o dist/bundle.min.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
